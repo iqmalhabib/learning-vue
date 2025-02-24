@@ -9,9 +9,8 @@
     <script src="https://unpkg.com/vue@3"></script>  
 </head>
 <body>
-    <nav 
-        class="navbar navbar-expand-lg"
-        :class="['']"    
+    <nav    
+        :class="[`navbar-${theme}` , `bg-${theme}` , 'navbar' , 'navbar-expand-lg']"    
     >
         <div class="container-fluid">
             <a class="navbar-brand" href="#">My Vue</a>
@@ -30,7 +29,7 @@
             <form class="d-flex">
                 <button 
                     class="btn btn-primary"
-                    @click.prevent="useDarkNavbar = !useDarkNavbar"
+                    @click.prevent="changeTheme()"
                 >Toggle Navbar</button>
             </form>
         </div>
@@ -45,8 +44,7 @@
             data(){
                 return{
                     activePage : 0,
-                    useDarkNavbar : false,
-                    
+                    theme : 'light',                 
                     pages : [
                     {    
                         link: { text: 'Home', url: 'index.html'},
@@ -65,6 +63,16 @@
                     }
                     ]
                 };
+            },
+            methods:{
+                changeTheme(){
+                    let theme = 'light';
+
+                    if(this.theme == 'light') {
+                        theme = 'dark';
+                    }
+                    this.theme = theme;
+                }
             }
         }).mount('body');
     </script>
