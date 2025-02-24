@@ -9,31 +9,12 @@
     <script src="https://unpkg.com/vue@3"></script>  
 </head>
 <body>
-    <nav    
-        :class="[`navbar-${theme}` , `bg-${theme}` , 'navbar' , 'navbar-expand-lg']"    
-    >
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">My Vue</a>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li v-for="(page, index) in pages" class="nav-item" :key="index">
-                    <a 
-                        class="nav-link" 
-                        :class="{active : activePage == index}"
-                        aria-current="page" 
-                        :href="page.link.url" 
-                        :title="`this title go to ${page.link.text} page`"
-                        @click.prevent="activePage = index"
-                    >{{ page.link.text }}</a>
-                </li>
-            </ul>
-            <form class="d-flex">
-                <button 
-                    class="btn btn-primary"
-                    @click.prevent="changeTheme()"
-                >Toggle Navbar</button>
-            </form>
-        </div>
-    </nav>
+    <navbar
+        :pages="pages"
+        :active-pages="activePage"
+        :nav-link-click="(index) => activePage = index"
+    ></navbar>
+
     <page-viewer
         :page="pages[activePage]"
     ></page-viewer>
@@ -41,8 +22,7 @@
         let app = Vue.createApp({
             data(){
                 return{
-                    activePage : 0,
-                    theme : 'light',                 
+                    activePage : 0,               
                     pages : [
                     {    
                         link: { text: 'Home', url: 'index.html'},
@@ -62,6 +42,50 @@
                     ]
                 };
             },
+        });
+        app.component('page-viewer',{
+            props : ['page'],
+            template :`
+                <div class="container">
+                    <h1>{{page.pageTitle}}</h1>
+                    <p>{{page.content}}</p>
+                </div>
+            `
+        });
+        app.component('navbar',{
+            props:['pages','activePages','navLinkClick'],
+            template: `
+                <nav    
+                :class="[\`navbar-\${theme}\` , \`bg-\${theme}\` , 'navbar' , 'navbar-expand-lg']"
+                >
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">My Vue</a>
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li v-for="(page, index) in pages" class="nav-item" :key="index">
+                                <a 
+                                    class="nav-link" 
+                                    :class="{active : activePage == index}"
+                                    aria-current="page" 
+                                    :href="page.link.url" 
+                                    :title="\`this title go to \${page.link.text} page\`"
+                                    @click.prevent="navLinkClick(index)"
+                                >{{ page.link.text }}</a>
+                            </li>
+                        </ul>
+                        <form class="d-flex">
+                            <button 
+                                class="btn btn-primary"
+                                @click.prevent="changeTheme()"
+                            >Toggle Navbar</button>
+                        </form>
+                    </div>
+                </nav>
+            `,
+            data(){
+                return {
+                    theme : 'light',  
+                }
+            },
             methods:{
                 changeTheme(){
                     let theme = 'light';
@@ -72,15 +96,6 @@
                     this.theme = theme;
                 }
             }
-        });
-        app.component('page-viewer',{
-            props : ['page'],
-            template :`
-                <div class="container">
-                    <h1>{{page.pageTitle}}</h1>
-                    <p>{{page.content}}</p>
-                </div>
-            `
         })
         app.mount('body');
     </script>
